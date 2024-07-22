@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eou pipefail
 
-pod_id=$(podman run --rm --name pop --privileged -u jenkins -v "${HOME}/.local/share/containers:/home/jenkins/.local/share/container"s:rw -d  pop /bin/bash -c "sleep infinity")
+pod_id=$(podman run --rm --name pop --privileged -u jenkins  -d  pop /bin/bash -c "sleep infinity")
 
 echo "Container created (${pod_id}), try to run podman images inside it!"
 podman exec -ti "${pod_id}" /bin/bash

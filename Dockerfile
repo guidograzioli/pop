@@ -1,8 +1,5 @@
-#FROM registry.access.redhat.com/ubi9/ubi-init
 FROM registry.fedoraproject.org/fedora
 VOLUME ["/etc/pki"]
-#ADD redhat.repo /etc/yum.repos.d/
-#ADD RPM-GPG-KEY-EPEL-9 /etc/pki/rpm-gpg/
 RUN dnf install -y ansible-core gcc python3-pip python3-devel python3-lxml libxml2-devel \
                    libxslt-devel openssl-devel python3-libselinux vim-enhanced git ncurses \
                    ansible-lint jq procps-ng sudo podman && dnf clean all && dnf update -y
