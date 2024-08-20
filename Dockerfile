@@ -1,27 +1,6 @@
-FROM registry.fedoraproject.org/fedora
-VOLUME ["/etc/pki"]
-RUN dnf install -y ansible-core gcc python3-pip python3-devel python3-lxml libxml2-devel \
-                   libxslt-devel openssl-devel python3-libselinux vim-enhanced git ncurses \
-                   ansible-lint jq procps-ng sudo podman && dnf clean all && dnf update -y
-RUN pip --version
-RUN groupadd -g 1000 jenkins && \
-    groupadd sudo && \
-    useradd -ms /bin/bash -d /var/jenkins_home/ -u 1000 -g jenkins jenkins && \
-    usermod -aG sudo jenkins && \
-    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-#RUN pip-3.9 install molecule molecule-docker molecule-podman && \
-#    pip-3.9 install --upgrade pip setuptools
-RUN pip install molecule molecule-docker molecule-podman && \
-    pip install --upgrade pip setuptools
-RUN usermod -aG root jenkins
-RUN chown 0:0 /etc/passwd
-RUN chown 0:0 /etc/group
-RUN chmod g=u /etc/passwd /etc/group
-RUN setcap cap_setuid+ep /usr/bin/newuidmap
-RUN setcap cap_setgid+ep /usr/bin/newgidmap
-RUN touch /etc/subgid /etc/subuid
-RUN chown 0:0 /etc/subgid
-RUN chown 0:0 /etc/subuid
-RUN chmod -R g=u /etc/subuid /etc/subgid
-VOLUME [ "/sys/fs/cgroup" ]
-CMD ["/usr/sbin/init"]
+FROM quay.io/podman/stable
+ARG ansible_version=2.16
+ADD containers.conf /etc/containers/containers.conf
+RUN dnf install -y python3 pip git python3-virtualenv
+RUN virtualenv -p "python3" /virtualenv/$ansible_version/ && mkdir -p /virtualenv/$ansible_version/
+RUN source /virtualenv/$ansible_version/bin/activate && pip install ansible-core==$ansible_version molecule==5.0.1 molecule-plugins==23.4.1 molecule-podman==2.0.3 ansible-lint==6.16.2 molecule-docker==2.1.0 &&  molecule --version
