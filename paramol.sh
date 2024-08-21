@@ -17,10 +17,11 @@ echo "Log will be placed in ${LOG_DIR}."
 PORT_BINDING=8080
 for s in $(list_scenarios)
 do
+    logfile="${LOG_DIR}/${s}.log"
     export PORT_BINDING=$(expr "${PORT_BINDING}" + 1)
-    molecule test --parallel -d "${MOL_DRIVER}" -s "${s}" -- -e wildfly_node_id=${s} "${@}" &> "${LOG_DIR}/${s}.log" &
+    molecule test --parallel -d "${MOL_DRIVER}" -s "${s}" -- -e wildfly_node_id=${s} "${@}" &> "${logfile}" &
     pids["${s}"]="${!}"
-    echo PID:${pids[${s}]} for scenario ${s}
+    echo "Scenario ${s} (PID:${pids[${s}]}, ${logfile} )"
 done
 
 for i in ${pids[@]}
