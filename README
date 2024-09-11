@@ -1,0 +1,53 @@
+README
+====
+
+This project is called pop as it stands for "Podman on Podman". It helps running Molecule inside a Podman container and execute its scenario in parallel.
+
+How to install
+----
+
+Use podman to build the container:
+
+    $ podman build . -t pop
+
+Add an alias to bashrc linked to the provided run.sh:
+
+    alias poprun="${HOME}//pop.git/run.sh"
+
+How to run molecule inside the container
+----
+
+First, set your default directory to the project, then execute the provided run.sh:
+
+    wildfly.git (main)]$ poprun
+    [root@039b4a8e878a work]#
+
+Then you can simply run the paramol.sh script placed in the /tools folder:
+
+    [root@039b4a8e878a work]# /tools/paramol.sh
+    Log will be placed in /tmp/tmp.rQkbqZsuVv.
+    Directory resources is not a molecule scenario, skipping.
+    Scenario uninstall (PID:27, /tmp/tmp.rQkbqZsuVv/uninstall.log )
+    Scenario prospero (PID:29, /tmp/tmp.rQkbqZsuVv/prospero.log )
+    Scenario install_options (PID:31, /tmp/tmp.rQkbqZsuVv/install_options.log )
+    Scenario colocated_cluster (PID:33, /tmp/tmp.rQkbqZsuVv/colocated_cluster.log )
+    Directory group_vars is not a molecule scenario, skipping.
+    Scenario default (PID:35, /tmp/tmp.rQkbqZsuVv/default.log )
+    Scenario offline (PID:37, /tmp/tmp.rQkbqZsuVv/offline.log )
+    Scenario custom_config_file (PID:39, /tmp/tmp.rQkbqZsuVv/custom_config_file.log )
+    Scenario yaml_config_validation (PID:41, /tmp/tmp.rQkbqZsuVv/yaml_config_validation.log )
+
+Each scenario will be run into a separate process and its output directed into its own logile. Once all the scenario have been run, the script will display the status of subprocess to ensure each of them ran succesfully. If some scenario fails, you can then check the logfile associated to the scenario/PID.
+    ...
+    Scenario custom_config_file (PID:39, /tmp/tmp.rQkbqZsuVv/custom_config_file.log )
+    Scenario yaml_config_validation (PID:41, /tmp/tmp.rQkbqZsuVv/yaml_config_validation.log )
+    PID(33) returned: 0
+    PID(39) returned: 0
+    PID(31) returned: 0
+    PID(37) returned: 0
+    PID(41) returned: 0
+    PID(35) returned: 0
+    PID(27) returned: 0
+    PID(29) returned: 0
+
+If you want to monitor "live" the progress of the scenarios, you can use tail `-f /tmp/tmp.*.log`.
