@@ -1,0 +1,12 @@
+[Unit]
+Description=GitHub self-hosted runner %i
+After=network.target
+
+[Service]
+ExecStart=podman run --name=runner-2.16-%i --replace --secret github_token --security-opt label=disable --security-opt seccomp=unconfined --device /dev/fuse:rw -v /var/lib/runner-2.16-%i:/var/lib/containers:Z --privileged  -ti --rm -e GITHUB_OWNER=ansible-middleware -e RUNNER_LABELS='molecule-2.16,runner-1' -e RUNNER_ALLOW_RUNASROOT=1 -e EPHEMERAL=1 localhost/runner-3.11-2.16
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+
