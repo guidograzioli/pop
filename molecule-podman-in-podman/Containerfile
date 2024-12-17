@@ -1,3 +1,18 @@
+FROM registry.access.redhat.com/ubi8/python-311 
+
+USER root
+
+RUN dnf -y module enable container-tools:rhel8; dnf -y update; rpm --restore --quiet shadow-utils; \
+    dnf -y install crun podman netavark fuse-overlayfs openssh-clients /etc/containers/storage.conf \
+    curl git jq hostname procps findutils which openssl --exclude container-selinux; \
+    rm -rf /var/cache/* /var/log/dnf* /var/log/yum.*
+
+ENV UID=1000
+ENV GID=0
+ENV USERNAME="runner"
+ARG ANSIBLE_VERSION="2.15.0"
+
+RUN useradd -m $USERNAME -u $UID
 # This is to mimic the OpenShift behaviour of adding the dynamic user to group 0.
 RUN usermod -G 0 $USERNAME
 ENV HOME /home/${USERNAME}
